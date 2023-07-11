@@ -16,13 +16,13 @@ public class Ejemplo02_03_JSON {
     public static void main(String[] args) {
         String appName = "Ejemplo_02_03_JSON";
         String master = "local";
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext sc = new JavaSparkContext(conf);
         SparkSession spark = SparkSession
                 .builder()
-                .appName("Java Spark SQL basic example")
-                .config("spark.some.config.option", "some-value")
+                .appName(appName)
+                .master(master)
                 .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         Dataset<Row> jsonData = spark.read().json("resources/people.json");
 
         // Mostrar el esquema del DataFrame
@@ -34,6 +34,13 @@ public class Ejemplo02_03_JSON {
         // Realizar operaciones adicionales en el DataFrame
         // ...
 
+        Dataset<Row> jsonDataAray = spark.read().json("resources/peopleArray.json");
+
+        // Mostrar el esquema del DataFrame
+        jsonDataAray.printSchema();
+
+        // Mostrar los primeros registros del DataFrame
+        jsonDataAray.show();
         // Cerrar la sesión de Spark
         spark.close();
     }

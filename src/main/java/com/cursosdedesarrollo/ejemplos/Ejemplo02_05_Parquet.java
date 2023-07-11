@@ -2,6 +2,7 @@ package com.cursosdedesarrollo.ejemplos;
 
 
 import org.apache.commons.logging.impl.SLF4JLog;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -15,13 +16,16 @@ public class Ejemplo02_05_Parquet {
     public static void main(String[] args) {
         String appName = "Ejemplo_02_05_CSV";
         String master = "local";
-        SparkSession spark = SparkSession.builder()
+        SparkSession spark = SparkSession
+                .builder()
                 .appName(appName)
                 .master(master)
                 .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         // Cargar los datos desde el archivo Parquet
         Dataset<Row> userData = spark.read().parquet("resources/users.parquet");
-
+        userData.printSchema();
         // Mostrar los datos cargados
         userData.show();
 

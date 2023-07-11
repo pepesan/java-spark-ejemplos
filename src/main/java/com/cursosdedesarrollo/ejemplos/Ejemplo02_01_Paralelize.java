@@ -1,6 +1,9 @@
 package com.cursosdedesarrollo.ejemplos;
 
 import org.apache.commons.logging.impl.SLF4JLog;
+import org.apache.parquet.filter2.predicate.Operators;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.storage.StorageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.spark.SparkConf;
@@ -17,12 +20,26 @@ public class Ejemplo02_01_Paralelize {
 
         String appName = "Ejemplo_02_03_Paralelize";
         String master = "local";
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext sc = new JavaSparkContext(conf);
+        SparkSession spark = SparkSession
+                .builder()
+                .appName(appName)
+                .master(master)
+                .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         List<Integer> data = Arrays.asList(1, 2, 3, 4, 5);
         // Paralelizar los datos
-        JavaRDD<Integer> distData = sc.parallelize(data);
+        JavaRDD<Integer> distData = sc.parallelize(data).cache().persist(StorageLevel.DISK_ONLY());
+        // manipulación de datos
+        JavaRDD<Integer> datosManipulados = distData.map(element -> element+1);
         // Imprimir cada elemento del RDD
-        distData.foreach(element -> logger.info("RDD Elemento: {}", element));
+        datosManipulados.foreach(
+                element ->
+                //{
+                        logger.info("RDD Elemento: {}", element)
+                                //;
+                //}
+        );
+        List<Integer> dataFinales = datosManipulados.collect();
     }
 }

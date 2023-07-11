@@ -26,12 +26,12 @@ public class Ejemplo03_01_Procesado {
     public static void main(String[] args) {
         String appName = "Ejemplo03_01_Procesado";
         String master = "local";
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        SparkSession spark = SparkSession.builder()
+        SparkSession spark = SparkSession
+                .builder()
                 .appName(appName)
                 .master(master)
                 .getOrCreate();
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         // Lee el fichero CSV
         Dataset<Row> csv = spark.read()
                 .option("header", "true") // Si el archivo CSV tiene una fila de encabezado

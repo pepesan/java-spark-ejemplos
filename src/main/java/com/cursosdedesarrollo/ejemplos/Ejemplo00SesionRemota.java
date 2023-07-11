@@ -3,13 +3,22 @@ package com.cursosdedesarrollo.ejemplos;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 
 public class Ejemplo00SesionRemota {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         String appName = "Ejemplo00";
         String master ="spark://localhost:7077";
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext sc = new JavaSparkContext(conf);
+
+        SparkSession spark = SparkSession
+                .builder()
+                .appName(appName)
+                .master(master)
+                .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
+        Thread.sleep(30000);
+        sc.close();
     }
 
 }

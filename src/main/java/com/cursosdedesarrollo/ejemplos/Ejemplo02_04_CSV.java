@@ -16,13 +16,18 @@ public class Ejemplo02_04_CSV {
     public static void main(String[] args) {
         String appName = "Ejemplo_02_04_CSV";
         String master = "local";
-        SparkSession spark = SparkSession.builder()
+        SparkSession spark = SparkSession
+                .builder()
                 .appName(appName)
                 .master(master)
                 .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         // Cargar el archivo CSV en un DataFrame
         Dataset<Row> csvData = spark.read()
-                .option("header", "true") // Si el archivo CSV tiene una fila de encabezado
+                .option("header", "false") // Si el archivo CSV tiene una fila de encabezado
+                .option("delimiter", ",")
+                .option("inferSchema", "true")
                 .csv("resources/iris.csv");
 
         // Mostrar el esquema del DataFrame
@@ -34,6 +39,16 @@ public class Ejemplo02_04_CSV {
         // Realizar operaciones adicionales en el DataFrame
         // ...
 
+        Dataset<Row> csvDataHeader = spark.read()
+                .option("header", "true") // Si el archivo CSV tiene una fila de encabezado
+                .option("delimiter", ",")
+                .option("inferSchema", "true")
+                .csv("resources/iris_header.csv");
+        // Mostrar el esquema del DataFrame
+        csvDataHeader.printSchema();
+
+        // Mostrar los primeros registros del DataFrame
+        csvDataHeader.show();
         // Cerrar la sesión de Spark
         spark.close();
     }

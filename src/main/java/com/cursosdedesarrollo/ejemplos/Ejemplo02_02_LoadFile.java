@@ -20,11 +20,17 @@ public class Ejemplo02_02_LoadFile {
     public static void main(String[] args) {
         String appName = "Ejemplo_02_03_LoadFile";
         String master = "local";
-        SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
-        JavaSparkContext sc = new JavaSparkContext(conf);
+        SparkSession spark = SparkSession
+                .builder()
+                .appName(appName)
+                .master(master)
+                .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         JavaRDD<String> distFile = sc.textFile("resources/data.txt");
         // Imprimir cada elemento del RDD
         distFile.foreach(element -> logger.info("texto: {}", element));
+        distFile = distFile.cache();
         // Pillar la longitud de cada línea
         JavaRDD<Integer> lineLengths = distFile.map(s -> s.length());
         int totalLength = lineLengths.reduce((a, b) -> a + b);
@@ -33,6 +39,7 @@ public class Ejemplo02_02_LoadFile {
         lineLengths.persist(StorageLevel.MEMORY_ONLY());
         // Cerrar contexto
         sc.close();
+        spark.close();
 
     }
 }
