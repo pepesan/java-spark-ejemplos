@@ -1,6 +1,6 @@
 # Ejercicios de uso de un Dataset
 Todos los siguiente ejercicios deberán realizarse con los datos del fichero CSV boston.csv presente en el 
-directrio resources
+directorio resources
 
 ## Cargar los datos desde el archivo CSV utilizando Java Spark:
 
