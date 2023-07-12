@@ -26,5 +26,15 @@ public class CargaJSON {
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 
+        Dataset<Row> jsonData = spark.read()
+                .option("multiLine", true)
+                .json("resources/ejercicios/resultados.json");
+
+        // Mostrar el esquema del DataFrame
+        jsonData.printSchema();
+
+        // Mostrar los primeros registros del DataFrame
+        jsonData.show();
+
     }
 }
