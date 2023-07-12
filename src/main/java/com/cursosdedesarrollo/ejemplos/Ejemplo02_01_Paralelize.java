@@ -2,6 +2,9 @@ package com.cursosdedesarrollo.ejemplos;
 
 import org.apache.commons.logging.impl.SLF4JLog;
 import org.apache.parquet.filter2.predicate.Operators;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.storage.StorageLevel;
 import org.slf4j.Logger;
@@ -41,5 +44,6 @@ public class Ejemplo02_01_Paralelize {
                 //}
         );
         List<Integer> dataFinales = datosManipulados.collect();
+
     }
 }

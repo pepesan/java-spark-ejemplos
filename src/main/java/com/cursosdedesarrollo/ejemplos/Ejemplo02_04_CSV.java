@@ -3,6 +3,7 @@ package com.cursosdedesarrollo.ejemplos;
 
 import org.apache.commons.logging.impl.SLF4JLog;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -50,6 +51,19 @@ public class Ejemplo02_04_CSV {
         // Mostrar los primeros registros del DataFrame
         csvDataHeader.show();
         // Cerrar la sesión de Spark
+
+        // Convertir el Dataset<Row> a JavaRDD<Row>
+        JavaRDD<Row> javaRDD = csvDataHeader.javaRDD();
+
+        // Imprimir el contenido del JavaRDD<Row>
+        javaRDD.foreach(row -> logger.info(row.toString()));
+
+        // Convertir el JavaRDD<Row> a Dataset<Row>
+        Dataset<Row> convertedDataset = spark.createDataFrame(javaRDD, csvDataHeader.schema());
+
+        // Mostrar el contenido del Dataset<Row> convertido
+        convertedDataset.show();
+
         spark.close();
     }
 

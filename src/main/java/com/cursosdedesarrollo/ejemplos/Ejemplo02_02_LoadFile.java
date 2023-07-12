@@ -37,6 +37,11 @@ public class Ejemplo02_02_LoadFile {
         logger.info("Longitud Total: {}", totalLength);
         // persistimos en memoria los datos
         lineLengths.persist(StorageLevel.MEMORY_ONLY());
+
+
+
+
+
         // Cerrar contexto
         sc.close();
         spark.close();

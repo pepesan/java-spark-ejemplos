@@ -24,7 +24,6 @@ public class Ejemplo02_03_JSON {
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
         Dataset<Row> jsonData = spark.read().json("resources/people.json");
-
         // Mostrar el esquema del DataFrame
         jsonData.printSchema();
 
