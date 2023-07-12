@@ -1,6 +1,7 @@
 package com.cursosdedesarrollo.ejercicios;
 
 import org.apache.commons.logging.impl.SLF4JLog;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -8,15 +9,15 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CargaJSON {
+public class CargaParquet {
 
     private static final Logger logger = LoggerFactory.getLogger(SLF4JLog.class);
     public static void main(String[] args) {
         /*
-            Ejercicio 02:
-            Carga el fichero Parquet desde la ruta resources/ejercicios/resultados.json
+            Ejercicio 03:
+            Carga el fichero Parquet desde la ruta resources/iris.parquet
          */
-        String appName = "CargaJSON";
+        String appName = "CargaCSV";
         String master = "local";
         SparkSession spark = SparkSession
                 .builder()
@@ -25,16 +26,11 @@ public class CargaJSON {
                 .getOrCreate();
 
         JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
-
-        Dataset<Row> jsonData = spark.read()
-                .option("multiLine", true)
-                .json("resources/ejercicios/resultados.json");
-
+        Dataset<Row> irisDataset = spark.read().parquet("resources/iris.parquet");
         // Mostrar el esquema del DataFrame
-        jsonData.printSchema();
+        irisDataset.printSchema();
 
         // Mostrar los primeros registros del DataFrame
-        jsonData.show();
-
+        irisDataset.show();
     }
 }
