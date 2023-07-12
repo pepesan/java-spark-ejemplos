@@ -35,15 +35,24 @@ public class Ejemplo03_01_Procesado {
         // Lee el fichero CSV
         Dataset<Row> csv = spark.read()
                 .option("header", "true") // Si el archivo CSV tiene una fila de encabezado
+                .option("inferSchema", "true")
+                .option("delimiter", ",")
                 .csv("resources/sample.csv").cache();
         csv.printSchema();
+        csv.show();
 
         // Filtra el usuario "me" y persiste
-        Dataset<Row> result = csv.filter((FilterFunction<Row>)row -> !row.getAs("user").equals("me"));
-        result.persist();
+        Dataset<Row> result = csv.filter(
+                (FilterFunction<Row>)row ->
+                        !row.getAs("user").equals("me")
+        );
+        result.persist(StorageLevel.DISK_ONLY());
 
         // Imprime el resultado
-        result.foreach((ForeachFunction<Row>) element -> logger.info("Row {}", element));
+        result.foreach(
+                (ForeachFunction<Row>) element ->
+                        logger.info("Row {}", element)
+        );
         // Cierra la sesión de Spark
         spark.close();
         sc.close();

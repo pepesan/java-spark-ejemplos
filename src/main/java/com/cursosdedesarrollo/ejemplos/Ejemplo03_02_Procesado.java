@@ -1,6 +1,7 @@
 package com.cursosdedesarrollo.ejemplos;
 
 import com.cursosdedesarrollo.ejemplos.entities.Person;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -11,11 +12,15 @@ import java.util.List;
 
 public class Ejemplo03_02_Procesado {
     public static void main(String[] args) {
+        String appName = "Ejemplo03_02_Procesado";
+        String master = "local";
         SparkSession spark = SparkSession
                 .builder()
-                .appName("Ejemplo05Procesado")
-                .master("local")
+                .appName(appName)
+                .master(master)
                 .getOrCreate();
+
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext());
 
 
         List<Person> data = Arrays.asList(
@@ -24,8 +29,10 @@ public class Ejemplo03_02_Procesado {
                 new Person("Charlie", 35),
                 new Person("Alice", 40)
         );
+
         Dataset<Row> df = spark.createDataFrame(data, Person.class);
 
+        df.printSchema();
         // Muestra el contenido del DataFrame
         df.show();
 
@@ -40,6 +47,15 @@ public class Ejemplo03_02_Procesado {
         // Ordena por edad de forma descendente
         Dataset<Row> sortedDF = df.orderBy(functions.col("age").desc());
         sortedDF.show();
+        // Ordena por edad de forma ascendente
+        Dataset<Row> sortedDFAsc = df.orderBy(functions.col("age").asc());
+        sortedDFAsc.show();
+
+        Dataset<Row> doubleSortedDF = df.orderBy(
+                functions.col("age").asc(),
+                functions.col("name").desc()
+        );
+        doubleSortedDF.show();
 
         // Calcula la suma de las edades
         long sumOfAges = df.agg(functions.sum("age")).head().getLong(0);

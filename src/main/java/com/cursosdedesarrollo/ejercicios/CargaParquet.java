@@ -17,7 +17,7 @@ public class CargaParquet {
             Ejercicio 03:
             Carga el fichero Parquet desde la ruta resources/iris.parquet
          */
-        String appName = "CargaCSV";
+        String appName = "CargaParquet";
         String master = "local";
         SparkSession spark = SparkSession
                 .builder()
