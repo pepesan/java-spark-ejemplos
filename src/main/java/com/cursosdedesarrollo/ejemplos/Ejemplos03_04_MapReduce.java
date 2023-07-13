@@ -84,6 +84,16 @@ public class Ejemplos03_04_MapReduce {
                 stringEncoder);
         nombres.printSchema();
 
+        Dataset<Long> edades = peopleDS.map(
+                (MapFunction<Person,Long>)
+                        // person -> person.getAge()
+                        Person::getAge
+                ,
+                longEncoder);
+        edades.printSchema();
+
+        // Dataset<Row> edadesRow = peopleDS.select("age");
+
         Dataset<Row> peopleDF = spark.read().json("resources/people.json");
 
         peopleDF.printSchema();

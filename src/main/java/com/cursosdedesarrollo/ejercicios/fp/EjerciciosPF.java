@@ -32,5 +32,8 @@ public class EjerciciosPF {
                 .add("unidades_vendidas", DataTypes.IntegerType));
         ventas.printSchema();
         ventas.show();
+
+        // Transformar de Dataset<Row> a Dataset<Integer> (map)
+        // Hacer que devuelva un Integer del Dataset<Integer> (reduce)
     }
 }
