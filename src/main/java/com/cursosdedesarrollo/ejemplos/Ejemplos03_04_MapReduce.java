@@ -57,19 +57,15 @@ public class Ejemplos03_04_MapReduce {
                 new Employee("HR", "David", 65000)
         );
         Dataset<Row> df = spark.createDataFrame(data, Employee.class);
-        /*
-        Dataset<Row> mappedDF = df.map(row -> RowFactory.create(
-            row.getString(0), row.getString(1), row.getInt(2),
-                Encoders.bean(Row.class)
-        ));
-
-         */
 
         Encoder<Long> longEncoder = Encoders.LONG();
         Dataset<Long> primitiveDS = spark.createDataset(Arrays.asList(1L, 2L, 3L), longEncoder);
         primitiveDS.printSchema();
         primitiveDS.show();
+
+        // transformaciones
         Dataset<Long> transformedDS = primitiveDS.map(
+                // MapFuncion <Tipo de Entrada, Tipo de Salida>
                 (MapFunction<Long, Long>) value -> value + 1L,
                 longEncoder);
         transformedDS.printSchema();
@@ -93,7 +89,14 @@ public class Ejemplos03_04_MapReduce {
         peopleDF.printSchema();
         peopleDF.show();
         Dataset<String> nombresDS = peopleDF.map(
-                (MapFunction<Row, String>) person -> "Name: " + person.getString(0),
+                // MapFuncion<Tipo Inicio, Tipo Fin>
+                (MapFunction<Row, String>)
+                        // Tipo Inicio: Person
+                        person ->
+                                // Tipo Fin: String    (concat String)
+                                "Name: " + person.getString(0)
+                ,
+                // Encoder del Tipo de Salida
                 stringEncoder);
         nombresDS.printSchema();
 
@@ -101,10 +104,14 @@ public class Ejemplos03_04_MapReduce {
 
         Encoder<Row> rowEncoder = Encoders.bean(Row.class);
         Dataset<Row> modifiedPeople = peopleDF.map(
-                (MapFunction<Row, Row>) row ->{
-                    // cualquier código que tu quieras para modificar cada row
-                    return RowFactory.create(row.getLong(0)+1, row.getString(1)+"!");
-                },
+                // MapFunction <Tipo Entrada, Tipo Salida>
+                (MapFunction<Row, Row>)
+                        // Tipo de entrada: Row
+                        row ->{
+                            // cualquier código que tu quieras para modificar cada row
+                            // Return Tipo de Salida: Row
+                            return RowFactory.create(row.getLong(0)+1, row.getString(1)+"!");
+                        },
                 rowEncoder
         );
         modifiedPeople.printSchema();
@@ -125,6 +132,8 @@ public class Ejemplos03_04_MapReduce {
 
 
         // Cierra la sesión de Spark al finalizar
-        spark.stop();
+
+        sc.close();
+        spark.close();
     }
 }
