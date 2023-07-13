@@ -5,12 +5,15 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.ReduceFunction;
 import org.apache.spark.sql.*;
+import static org.apache.spark.sql.functions.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+
+import static org.apache.spark.sql.expressions.javalang.typed.avg;
 
 public class EjerciciosPF {
     private static final Logger logger = LoggerFactory.getLogger(SLF4JLog.class);
@@ -68,16 +71,26 @@ public class EjerciciosPF {
         // Cálculo rápido
         Long resultado = totales / unidades.count();
 
+        logger.info("Número máximo: {}",maximo);
+        logger.info("Número mínimo: {}", minimo);
+        logger.info("Promedio: {}", resultado);
+
         Dataset<Row> rowResultado = unidades.selectExpr("avg(value)");
         logger.info("row: {}", rowResultado);
         rowResultado.printSchema();
         rowResultado.show();
+
+
         String salida = rowResultado.first().getAs("avg(value)").toString();
         logger.info("Media: {}",salida);
 
-        logger.info("Número máximo: {}",maximo);
-        logger.info("Número mínimo: {}", minimo);
-        logger.info("Promedio: {}", resultado);
+        // Crear una vista temporal del DataFrame
+        unidades.createOrReplaceTempView("datos");
+
+        // Cálculo de la media utilizando SQL
+        Dataset<Row> res = spark.sql("SELECT AVG(value) AS media FROM datos");
+        double media = res.first().getDouble(0);
+        logger.info("Media con SQL: {}",media);
 
     }
 }
