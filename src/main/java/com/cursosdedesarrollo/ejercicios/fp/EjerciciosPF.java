@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-import static org.apache.spark.sql.expressions.javalang.typed.avg;
 
 public class EjerciciosPF {
     private static final Logger logger = LoggerFactory.getLogger(SLF4JLog.class);
@@ -55,7 +54,9 @@ public class EjerciciosPF {
         unidades.show();
 
         Integer totales = unidades.reduce(
-                (ReduceFunction<Integer>) Integer::sum
+                (ReduceFunction<Integer>)
+                        // (act, acc) -> act+acc
+                        Integer::sum
         );
 
         logger.info("Totales {}", totales);
