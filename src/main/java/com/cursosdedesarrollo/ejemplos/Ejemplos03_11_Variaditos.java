@@ -59,14 +59,16 @@ public class Ejemplos03_11_Variaditos {
         // Crear un Dataset de ejemplo con valores nulos
         rows = Arrays.asList(
                 RowFactory.create("John", "Doe", null),
-                RowFactory.create("Jane", "Smith", "25")
+                RowFactory.create("Jane", "Smith", 25)
         );
         schema = new StructType()
                 .add("nombre", DataTypes.StringType)
                 .add("apellido", DataTypes.StringType)
-                .add("edad", DataTypes.StringType);
+                .add("cantidad", DataTypes.IntegerType);
         dataset = spark.createDataFrame(rows, schema);
-
+        dataset.printSchema();
+        // Mostrar los resultados
+        dataset.show();
         // Eliminar filas con valores nulos
         Dataset<Row> withoutNulls = dataset.na().drop();
         withoutNulls.printSchema();

@@ -36,6 +36,7 @@ public class Ejemplos03_06_Join {
 
         // Realiza la operación de join
         Dataset<Row> joinedDF = employeeDF.join(departmentDF, "department");
+        joinedDF.printSchema();
 
         // Muestra los resultados
         joinedDF.show();

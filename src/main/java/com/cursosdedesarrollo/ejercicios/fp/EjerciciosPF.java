@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class EjerciciosPF {
     public static void main(String[] args) {
-        String appName = "ResolucionColumnas";
+        String appName = "ResolucionPF";
         String master = "local";
         SparkSession spark = SparkSession
                 .builder()
@@ -30,5 +30,7 @@ public class EjerciciosPF {
         ), new StructType()
                 .add("producto", DataTypes.StringType)
                 .add("unidades_vendidas", DataTypes.IntegerType));
+        ventas.printSchema();
+        ventas.show();
     }
 }

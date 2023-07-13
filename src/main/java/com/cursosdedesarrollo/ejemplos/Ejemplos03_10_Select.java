@@ -47,6 +47,10 @@ public class Ejemplos03_10_Select {
         seleccionados.printSchema();
         // Muestra los datos resultantes
         seleccionados.show();
+        seleccionados = df.select("cantidad", "precio_unitario");
+        seleccionados.printSchema();
+        // Muestra los datos resultantes
+        seleccionados.show();
 
 
 

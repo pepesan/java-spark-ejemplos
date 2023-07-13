@@ -36,6 +36,7 @@ public class Ejemplos03_07_Union {
 
         // Realiza la operación de unión
         Dataset<Row> unionDF = employeeDF.union(departmentDF);
+        unionDF.printSchema();
 
         // Muestra los resultados
         unionDF.show();
