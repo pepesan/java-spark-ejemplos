@@ -24,10 +24,10 @@ public class Ejemplo03_02_Procesado {
 
 
         List<Person> data = Arrays.asList(
-                new Person("Alice", 25),
-                new Person("Bob", 30),
-                new Person("Charlie", 35),
-                new Person("Alice", 40)
+                new Person("Alice", 25L),
+                new Person("Bob", 30L),
+                new Person("Charlie", 35L),
+                new Person("Alice", 40L)
         );
 
         Dataset<Row> df = spark.createDataFrame(data, Person.class);

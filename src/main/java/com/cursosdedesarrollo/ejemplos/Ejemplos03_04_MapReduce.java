@@ -1,10 +1,13 @@
 package com.cursosdedesarrollo.ejemplos;
 
 import com.cursosdedesarrollo.ejemplos.entities.Employee;
+import com.cursosdedesarrollo.ejemplos.entities.Person;
 import org.apache.commons.logging.impl.SLF4JLog;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.api.java.function.ReduceFunction;
 import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +64,64 @@ public class Ejemplos03_04_MapReduce {
         ));
 
          */
+
+        Encoder<Long> longEncoder = Encoders.LONG();
+        Dataset<Long> primitiveDS = spark.createDataset(Arrays.asList(1L, 2L, 3L), longEncoder);
+        primitiveDS.printSchema();
+        primitiveDS.show();
+        Dataset<Long> transformedDS = primitiveDS.map(
+                (MapFunction<Long, Long>) value -> value + 1L,
+                longEncoder);
+        transformedDS.printSchema();
+        transformedDS.show();
+        transformedDS.collect(); // Returns [2, 3, 4]
+
+        Encoder<Person> personEncoder = Encoders.bean(Person.class);
+        Dataset<Person> peopleDS = spark.read().json("resources/people.json").as(personEncoder);
+        peopleDS.printSchema();
+        peopleDS.show();
+        Encoder<String> stringEncoder = Encoders.bean(String.class);
+
+
+        Dataset<String> nombres = peopleDS.map(
+                (MapFunction<Person, String>) person -> "Name: " + person.getName(),
+                stringEncoder);
+        nombres.printSchema();
+
+        Dataset<Row> peopleDF = spark.read().json("resources/people.json");
+
+        peopleDF.printSchema();
+        peopleDF.show();
+        Dataset<String> nombresDS = peopleDF.map(
+                (MapFunction<Row, String>) person -> "Name: " + person.getString(0),
+                stringEncoder);
+        nombresDS.printSchema();
+
+
+
+        Encoder<Row> rowEncoder = Encoders.bean(Row.class);
+        Dataset<Row> modifiedPeople = peopleDF.map(
+                (MapFunction<Row, Row>) row ->{
+                    // cualquier código que tu quieras para modificar cada row
+                    return RowFactory.create(row.getLong(0)+1, row.getString(1)+"!");
+                },
+                rowEncoder
+        );
+        modifiedPeople.printSchema();
+
+        modifiedPeople.foreach(row -> {
+            String salida = "Row: age: "+ row.getLong(0) + ", name: '"+ row.getString(1)+"'";
+            logger.info(salida);
+        });
+
+
+        List<Integer> dataDF = Arrays.asList(1, 2, 3);
+        Dataset<Integer> ds = spark.createDataset(dataDF, Encoders.INT());
+        int reduced = ds.reduce(
+                (ReduceFunction<Integer>) (act, acc) -> act + acc
+        );
+        logger.info("Reduced: {}",reduced);
+
 
 
         // Cierra la sesión de Spark al finalizar
