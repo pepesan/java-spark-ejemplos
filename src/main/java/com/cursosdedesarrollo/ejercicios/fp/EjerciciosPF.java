@@ -1,16 +1,20 @@
 package com.cursosdedesarrollo.ejercicios.fp;
 
+import org.apache.commons.logging.impl.SLF4JLog;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.api.java.function.ReduceFunction;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public class EjerciciosPF {
+    private static final Logger logger = LoggerFactory.getLogger(SLF4JLog.class);
+
     public static void main(String[] args) {
         String appName = "ResolucionPF";
         String master = "local";
@@ -35,5 +39,45 @@ public class EjerciciosPF {
 
         // Transformar de Dataset<Row> a Dataset<Integer> (map)
         // Hacer que devuelva un Integer del Dataset<Integer> (reduce)
+
+        Dataset<Row> unidadesRow = ventas.select("unidades_vendidas");
+        unidadesRow.printSchema();
+        unidadesRow.show();
+
+        Dataset<Integer> unidades = ventas.map(
+                (MapFunction<Row,Integer>) row ->
+                row.getInt(1),
+                Encoders.INT()
+        );
+        unidades.printSchema();
+        unidades.show();
+
+        Integer totales = unidades.reduce(
+                (ReduceFunction<Integer>) Integer::sum
+        );
+
+        logger.info("Totales {}", totales);
+
+
+        // Número máximo
+        Integer maximo = unidades.reduce((ReduceFunction<Integer>) Math::max);
+
+        // Número mínimo
+        Integer minimo = unidades.reduce((ReduceFunction<Integer>) Math::min);
+
+        // Cálculo rápido
+        Long resultado = totales / unidades.count();
+
+        Dataset<Row> rowResultado = unidades.selectExpr("avg(value)");
+        logger.info("row: {}", rowResultado);
+        rowResultado.printSchema();
+        rowResultado.show();
+        String salida = rowResultado.first().getAs("avg(value)").toString();
+        logger.info("Media: {}",salida);
+
+        logger.info("Número máximo: {}",maximo);
+        logger.info("Número mínimo: {}", minimo);
+        logger.info("Promedio: {}", resultado);
+
     }
 }
